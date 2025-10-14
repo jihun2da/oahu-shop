@@ -46,3 +46,6 @@ Thumbs.db
 *.tmp
 .cache/
 
+# Data files (exclude inquiries but keep settings)
+data/inquiries.json
+

@@ -1,0 +1,26 @@
+{
+  "banner_slide_interval": 3,
+  "banners": [],
+  "notice": {
+    "title": "공지사항",
+    "content": "신상품이 입고되었습니다! 지금 확인해보세요.",
+    "enabled": true
+  },
+  "business_info": {
+    "company_name": "OAHU Shop",
+    "ceo_name": "대표자명",
+    "business_number": "123-45-67890",
+    "address": "서울특별시 강남구",
+    "email": "contact@oahu-shop.com",
+    "phone": "02-1234-5678",
+    "enabled": true
+  },
+  "inquiry_form_fields": [
+    {"id": "name", "label": "이름", "type": "text", "required": true},
+    {"id": "email", "label": "이메일", "type": "email", "required": true},
+    {"id": "phone", "label": "연락처", "type": "text", "required": false},
+    {"id": "subject", "label": "문의 제목", "type": "text", "required": true},
+    {"id": "message", "label": "문의 내용", "type": "textarea", "required": true}
+  ]
+}
+
