@@ -209,33 +209,6 @@ st.markdown("""
         background-color: #333333;
     }
     
-    /* Top 버튼 스타일 */
-    .scroll-to-top {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        z-index: 999;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        cursor: pointer;
-        font-size: 24px;
-        font-weight: bold;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .scroll-to-top:hover {
-        transform: scale(1.1);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-    }
-    
     /* 로그인 폼 스타일 */
     .login-container {
         max-width: 400px;
@@ -545,13 +518,6 @@ def show_main_page():
         if st.button("🔐 관리자 페이지"):
             st.session_state.page = 'login'
             st.rerun()
-    
-    # Top 버튼
-    st.markdown("""
-    <div class="scroll-to-top" onclick="window.parent.document.querySelector('.main').scrollTo({top: 0, behavior: 'smooth'});" style="cursor: pointer;">
-        ↑
-    </div>
-    """, unsafe_allow_html=True)
 
 # 상품 상세 페이지
 def show_detail_page():
@@ -613,13 +579,6 @@ def show_detail_page():
                     st.image(img, use_container_width=True, caption=images[idx].name)
                 except Exception as e:
                     st.error(f"이미지 로드 실패: {e}")
-    
-    # Top 버튼
-    st.markdown("""
-    <div class="scroll-to-top" onclick="window.parent.document.querySelector('.main').scrollTo({top: 0, behavior: 'smooth'});" style="cursor: pointer;">
-        ↑
-    </div>
-    """, unsafe_allow_html=True)
 
 # 문의하기 페이지
 def show_inquiry_page():
@@ -672,13 +631,6 @@ def show_inquiry_page():
                 time.sleep(2)
                 st.session_state.page = 'home'
                 st.rerun()
-    
-    # Top 버튼
-    st.markdown("""
-    <div class="scroll-to-top" onclick="window.parent.document.querySelector('.main').scrollTo({top: 0, behavior: 'smooth'});" style="cursor: pointer;">
-        ↑
-    </div>
-    """, unsafe_allow_html=True)
 
 # 로그인 페이지
 def show_login_page():
