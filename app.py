@@ -8,6 +8,8 @@ import subprocess
 from datetime import datetime
 import time
 import base64
+import zipfile
+import io
 
 # 페이지 설정
 st.set_page_config(
@@ -563,6 +565,27 @@ def show_detail_page():
         st.warning("상품 이미지가 없습니다.")
         return
     
+    # 전체 이미지 다운로드 버튼
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        # ZIP 파일 생성
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            for img_path in images:
+                zip_file.write(img_path, img_path.name)
+        
+        zip_buffer.seek(0)
+        
+        st.download_button(
+            label="📦 전체 이미지 다운로드 (ZIP)",
+            data=zip_buffer,
+            file_name=f"{product_name}_images.zip",
+            mime="application/zip",
+            use_container_width=True
+        )
+    
+    st.markdown("---")
+    
     # 3열 그리드로 모든 이미지 표시
     cols_per_row = 3
     for i in range(0, len(images), cols_per_row):
@@ -577,6 +600,17 @@ def show_detail_page():
                 try:
                     img = Image.open(images[idx])
                     st.image(img, use_container_width=True, caption=images[idx].name)
+                    
+                    # 이미지 다운로드 버튼
+                    with open(images[idx], 'rb') as file:
+                        st.download_button(
+                            label="📥 다운로드",
+                            data=file,
+                            file_name=images[idx].name,
+                            mime="image/jpeg",
+                            key=f"download_{folder_num}_{idx}",
+                            use_container_width=True
+                        )
                 except Exception as e:
                     st.error(f"이미지 로드 실패: {e}")
 
