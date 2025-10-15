@@ -249,37 +249,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Top 버튼 HTML (JavaScript 포함)
-st.markdown("""
-<div id="scroll-to-top" class="scroll-to-top" onclick="scrollToTop()">
-    ↑
-</div>
-
-<script>
-function scrollToTop() {
-    window.parent.document.querySelector('.main').scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
-}
-
-// Streamlit iframe 내에서도 작동하도록
-if (window.parent !== window) {
-    document.getElementById('scroll-to-top').addEventListener('click', function() {
-        window.parent.postMessage({
-            type: 'streamlit:setComponentValue',
-            value: 'scroll-top'
-        }, '*');
-        
-        // 직접 스크롤도 시도
-        window.scrollTo({top: 0, behavior: 'smooth'});
-        document.body.scrollTop = 0;
-        document.documentElement.scrollTop = 0;
-    });
-}
-</script>
-""", unsafe_allow_html=True)
-
 # 세션 스테이트 초기화
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
@@ -576,6 +545,13 @@ def show_main_page():
         if st.button("🔐 관리자 페이지"):
             st.session_state.page = 'login'
             st.rerun()
+    
+    # Top 버튼
+    st.markdown("""
+    <a href="#" class="scroll-to-top" onclick="window.scrollTo(0,0); return false;">
+        ↑
+    </a>
+    """, unsafe_allow_html=True)
 
 # 상품 상세 페이지
 def show_detail_page():
@@ -637,6 +613,13 @@ def show_detail_page():
                     st.image(img, use_container_width=True, caption=images[idx].name)
                 except Exception as e:
                     st.error(f"이미지 로드 실패: {e}")
+    
+    # Top 버튼
+    st.markdown("""
+    <a href="#" class="scroll-to-top" onclick="window.scrollTo(0,0); return false;">
+        ↑
+    </a>
+    """, unsafe_allow_html=True)
 
 # 문의하기 페이지
 def show_inquiry_page():
@@ -689,6 +672,13 @@ def show_inquiry_page():
                 time.sleep(2)
                 st.session_state.page = 'home'
                 st.rerun()
+    
+    # Top 버튼
+    st.markdown("""
+    <a href="#" class="scroll-to-top" onclick="window.scrollTo(0,0); return false;">
+        ↑
+    </a>
+    """, unsafe_allow_html=True)
 
 # 로그인 페이지
 def show_login_page():
