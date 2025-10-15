@@ -546,18 +546,11 @@ def show_main_page():
             st.session_state.page = 'login'
             st.rerun()
     
-    # Top 버튼 (JavaScript로 스크롤)
+    # Top 버튼
     st.markdown("""
-    <script>
-    function scrollToTop() {
-        const mainElement = window.parent.document.querySelector('.main');
-        if (mainElement) {
-            mainElement.scrollTop = 0;
-        }
-        window.scrollTo(0, 0);
-    }
-    </script>
-    <a href="javascript:void(0);" class="scroll-to-top" onclick="scrollToTop();">↑</a>
+    <div class="scroll-to-top" onclick="window.parent.document.querySelector('.main').scrollTo({top: 0, behavior: 'smooth'});" style="cursor: pointer;">
+        ↑
+    </div>
     """, unsafe_allow_html=True)
 
 # 상품 상세 페이지
@@ -621,18 +614,11 @@ def show_detail_page():
                 except Exception as e:
                     st.error(f"이미지 로드 실패: {e}")
     
-    # Top 버튼 (JavaScript로 스크롤)
+    # Top 버튼
     st.markdown("""
-    <script>
-    function scrollToTopDetail() {
-        const mainElement = window.parent.document.querySelector('.main');
-        if (mainElement) {
-            mainElement.scrollTop = 0;
-        }
-        window.scrollTo(0, 0);
-    }
-    </script>
-    <a href="javascript:void(0);" class="scroll-to-top" onclick="scrollToTopDetail();">↑</a>
+    <div class="scroll-to-top" onclick="window.parent.document.querySelector('.main').scrollTo({top: 0, behavior: 'smooth'});" style="cursor: pointer;">
+        ↑
+    </div>
     """, unsafe_allow_html=True)
 
 # 문의하기 페이지
@@ -687,18 +673,11 @@ def show_inquiry_page():
                 st.session_state.page = 'home'
                 st.rerun()
     
-    # Top 버튼 (JavaScript로 스크롤)
+    # Top 버튼
     st.markdown("""
-    <script>
-    function scrollToTopInquiry() {
-        const mainElement = window.parent.document.querySelector('.main');
-        if (mainElement) {
-            mainElement.scrollTop = 0;
-        }
-        window.scrollTo(0, 0);
-    }
-    </script>
-    <a href="javascript:void(0);" class="scroll-to-top" onclick="scrollToTopInquiry();">↑</a>
+    <div class="scroll-to-top" onclick="window.parent.document.querySelector('.main').scrollTo({top: 0, behavior: 'smooth'});" style="cursor: pointer;">
+        ↑
+    </div>
     """, unsafe_allow_html=True)
 
 # 로그인 페이지
