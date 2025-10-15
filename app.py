@@ -241,6 +241,9 @@ def load_settings():
     return {
         "banner_slide_interval": 3,
         "banners": [],
+        "shop_name": "🌺 OAHU SHOP 🌺",
+        "shop_name_font_size": 48,
+        "shop_name_color": "#333333",
         "notice": {
             "title": "공지사항",
             "content": "신상품이 입고되었습니다!",
@@ -447,8 +450,16 @@ def show_footer(settings):
 def show_main_page():
     settings = load_settings()
     
-    # 헤더
-    st.markdown('<div class="header">🌺 OAHU SHOP 🌺</div>', unsafe_allow_html=True)
+    # 헤더 (상점명)
+    shop_name = settings.get('shop_name', '🌺 OAHU SHOP 🌺')
+    shop_name_font_size = settings.get('shop_name_font_size', 48)
+    shop_name_color = settings.get('shop_name_color', '#333333')
+    
+    st.markdown(f'''
+    <div class="header" style="font-size: {shop_name_font_size}px !important; color: {shop_name_color} !important;">
+        {shop_name}
+    </div>
+    ''', unsafe_allow_html=True)
     
     # 배너 슬라이더
     show_banner_slider(settings)
@@ -723,7 +734,7 @@ def show_admin_page():
     
     # 탭 메뉴
     tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
-        "📸 배너 관리", 
+        "🏪 상점명 & 배너", 
         "📢 공지사항", 
         "📦 상품 관리", 
         "🏢 사업자 정보",
@@ -736,7 +747,55 @@ def show_admin_page():
     
     # 배너 관리 탭
     with tab1:
-        st.subheader("배너 슬라이드 관리")
+        st.subheader("상점명 및 배너 설정")
+        
+        # 상점명 설정
+        st.markdown("### 🏪 상점명 설정")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            shop_name = st.text_input(
+                "상점명",
+                value=settings.get('shop_name', '🌺 OAHU SHOP 🌺'),
+                help="메인 페이지 상단에 표시될 상점명을 입력하세요"
+            )
+            
+            shop_name_font_size = st.slider(
+                "글자 크기",
+                min_value=20,
+                max_value=100,
+                value=settings.get('shop_name_font_size', 48),
+                help="상점명 글자 크기를 조절하세요"
+            )
+        
+        with col2:
+            shop_name_color = st.color_picker(
+                "글자 색상",
+                value=settings.get('shop_name_color', '#333333'),
+                help="상점명 글자 색상을 선택하세요"
+            )
+            
+            # 미리보기
+            st.markdown("**미리보기:**")
+            st.markdown(f'''
+            <div style="font-size: {shop_name_font_size}px; color: {shop_name_color}; text-align: center; font-weight: bold; padding: 20px;">
+                {shop_name}
+            </div>
+            ''', unsafe_allow_html=True)
+        
+        if st.button("💾 상점명 설정 저장", use_container_width=True):
+            settings['shop_name'] = shop_name
+            settings['shop_name_font_size'] = shop_name_font_size
+            settings['shop_name_color'] = shop_name_color
+            save_settings(settings)
+            st.success("✅ 상점명 설정이 저장되었습니다!")
+            st.rerun()
+        
+        st.markdown("---")
+        
+        # 배너 슬라이드 설정
+        st.markdown("### 📸 배너 슬라이드 관리")
         
         # 슬라이드 시간 설정
         slide_interval = st.number_input(
@@ -929,11 +988,12 @@ def show_admin_page():
             selected_folder = st.selectbox(
                 "수정할 상품 폴더 선택",
                 options=folder_names,
+                index=0,
                 help="이미지를 추가하거나 수정할 상품 폴더를 선택하세요."
             )
             
-            if selected_folder:
-                folder_path = IMAGE_DIR / selected_folder
+            if selected_folder and selected_folder in folder_names:
+                folder_path = IMAGE_DIR / str(selected_folder)
                 existing_images = get_folder_images(folder_path)
                 
                 col1, col2 = st.columns(2)
