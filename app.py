@@ -986,72 +986,78 @@ def show_admin_page():
         if folders and len(folders) > 0:
             folder_names = [f.name for f in folders]
             
-            selected_folder_name = st.selectbox(
-                "수정할 상품 폴더 선택",
-                options=folder_names,
-                help="이미지를 추가하거나 수정할 상품 폴더를 선택하세요."
-            )
-            
-            if selected_folder_name:
-                folder_path = IMAGE_DIR / selected_folder_name
+            if len(folder_names) > 0:
+                selected_folder_name = st.selectbox(
+                    "수정할 상품 폴더 선택",
+                    options=folder_names,
+                    help="이미지를 추가하거나 수정할 상품 폴더를 선택하세요."
+                )
                 
-                if not folder_path.exists():
-                    st.error(f"폴더를 찾을 수 없습니다: {selected_folder_name}")
-                else:
-                    existing_images = get_folder_images(folder_path)
-                    
-                    col1, col2 = st.columns(2)
-                    
-                    with col1:
-                        st.markdown(f"**현재 이미지: {len(existing_images)}장**")
-                        if existing_images:
-                            # 썸네일로 현재 이미지 표시
-                            for i, img_path in enumerate(existing_images[:4], 1):
-                                try:
-                                    img = Image.open(img_path)
-                                    st.image(img, caption=f"image_{i}.jpg", width=100)
-                                except:
-                                    pass
-                            if len(existing_images) > 4:
-                                st.info(f"외 {len(existing_images) - 4}장 더 있음")
-                    
-                    with col2:
-                        with st.form(f"update_product_images_{selected_folder_name}"):
-                            st.markdown("**새 이미지 업로드**")
-                            new_images = st.file_uploader(
-                                "추가할 이미지 선택",
-                                type=['jpg', 'jpeg', 'png'],
-                                accept_multiple_files=True,
-                                key=f"uploader_{selected_folder_name}"
-                            )
+                if selected_folder_name:
+                    try:
+                        folder_path = IMAGE_DIR / selected_folder_name
+                        
+                        if not folder_path.exists():
+                            st.error(f"폴더를 찾을 수 없습니다: {selected_folder_name}")
+                        else:
+                            existing_images = get_folder_images(folder_path)
                             
-                            replace_mode = st.checkbox("기존 이미지 모두 삭제하고 교체")
+                            col1, col2 = st.columns(2)
                             
-                            update_button = st.form_submit_button("🔄 이미지 업데이트", use_container_width=True)
+                            with col1:
+                                st.markdown(f"**현재 이미지: {len(existing_images)}장**")
+                                if existing_images:
+                                    # 썸네일로 현재 이미지 표시
+                                    for i, img_path in enumerate(existing_images[:4], 1):
+                                        try:
+                                            img = Image.open(img_path)
+                                            st.image(img, caption=f"image_{i}.jpg", width=100)
+                                        except:
+                                            pass
+                                    if len(existing_images) > 4:
+                                        st.info(f"외 {len(existing_images) - 4}장 더 있음")
                             
-                            if update_button and new_images:
-                                try:
-                                    if replace_mode:
-                                        # 기존 이미지 삭제
-                                        for img in existing_images:
-                                            img.unlink()
-                                        start_idx = 1
-                                        st.info("기존 이미지를 모두 삭제했습니다.")
-                                    else:
-                                        # 기존 이미지 유지, 새 번호부터 시작
-                                        start_idx = len(existing_images) + 1
+                            with col2:
+                                with st.form(f"update_product_images_{selected_folder_name}"):
+                                    st.markdown("**새 이미지 업로드**")
+                                    new_images = st.file_uploader(
+                                        "추가할 이미지 선택",
+                                        type=['jpg', 'jpeg', 'png'],
+                                        accept_multiple_files=True,
+                                        key=f"uploader_{selected_folder_name}"
+                                    )
                                     
-                                    # 새 이미지 저장
-                                    for idx, uploaded_file in enumerate(new_images, start_idx):
-                                        img = Image.open(uploaded_file)
-                                        img_path = folder_path / f"image_{idx}.jpg"
-                                        img.save(img_path, "JPEG")
+                                    replace_mode = st.checkbox("기존 이미지 모두 삭제하고 교체")
                                     
-                                    st.success(f"✅ {len(new_images)}장의 이미지가 업데이트되었습니다!")
-                                    st.rerun()
+                                    update_button = st.form_submit_button("🔄 이미지 업데이트", use_container_width=True)
                                     
-                                except Exception as e:
-                                    st.error(f"❌ 이미지 업데이트 중 오류: {e}")
+                                    if update_button and new_images:
+                                        try:
+                                            if replace_mode:
+                                                # 기존 이미지 삭제
+                                                for img in existing_images:
+                                                    img.unlink()
+                                                start_idx = 1
+                                                st.info("기존 이미지를 모두 삭제했습니다.")
+                                            else:
+                                                # 기존 이미지 유지, 새 번호부터 시작
+                                                start_idx = len(existing_images) + 1
+                                            
+                                            # 새 이미지 저장
+                                            for idx, uploaded_file in enumerate(new_images, start_idx):
+                                                img = Image.open(uploaded_file)
+                                                img_path = folder_path / f"image_{idx}.jpg"
+                                                img.save(img_path, "JPEG")
+                                            
+                                            st.success(f"✅ {len(new_images)}장의 이미지가 업데이트되었습니다!")
+                                            st.rerun()
+                                            
+                                        except Exception as e:
+                                            st.error(f"❌ 이미지 업데이트 중 오류: {e}")
+                    except Exception as e:
+                        st.error(f"❌ 오류가 발생했습니다: {e}")
+            else:
+                st.warning("등록된 상품 폴더가 없습니다.")
         else:
             st.warning("등록된 상품이 없습니다.")
         
