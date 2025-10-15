@@ -432,34 +432,34 @@ def show_footer(settings):
     business_info = settings.get('business_info', {})
     
     if business_info.get('enabled', False):
-        # 사업자 정보 HTML 생성
-        info_html = f"""
-        <div class="footer">
-            <div class="footer-section">
-                <div class="footer-title">🏢 사업자 정보</div>
-                <div class="footer-content">
-                    상호: {business_info.get('company_name', 'OAHU Shop')}<br>
-                    대표자: {business_info.get('ceo_name', '')}<br>
-                    사업자등록번호: {business_info.get('business_number', '')}<br>
-                    주소: {business_info.get('address', '')}<br>
-                    전화: {business_info.get('phone', '')}
-        """
+        # 사업자 정보 구성
+        company_name = business_info.get('company_name', 'OAHU Shop')
+        ceo_name = business_info.get('ceo_name', '')
+        business_number = business_info.get('business_number', '')
+        address = business_info.get('address', '')
+        phone = business_info.get('phone', '')
+        kakao_id = business_info.get('kakao_id', '')
+        instagram_id = business_info.get('instagram_id', '')
+        wechat_id = business_info.get('wechat_id', '')
         
-        # 메신저 정보 추가 (있는 경우만)
-        if business_info.get('kakao_id'):
-            info_html += f"<br>카카오톡: {business_info.get('kakao_id')}"
-        if business_info.get('instagram_id'):
-            info_html += f"<br>인스타그램: {business_info.get('instagram_id')}"
-        if business_info.get('wechat_id'):
-            info_html += f"<br>위챗: {business_info.get('wechat_id')}"
+        # HTML 생성
+        footer_html = '<div class="footer"><div class="footer-section"><div class="footer-title">🏢 사업자 정보</div><div class="footer-content">'
+        footer_html += f'상호: {company_name}<br>'
+        footer_html += f'대표자: {ceo_name}<br>'
+        footer_html += f'사업자등록번호: {business_number}<br>'
+        footer_html += f'주소: {address}<br>'
+        footer_html += f'전화: {phone}'
         
-        info_html += """
-                </div>
-            </div>
-        </div>
-        """
+        if kakao_id:
+            footer_html += f'<br>카카오톡: {kakao_id}'
+        if instagram_id:
+            footer_html += f'<br>인스타그램: {instagram_id}'
+        if wechat_id:
+            footer_html += f'<br>위챗: {wechat_id}'
         
-        st.markdown(info_html, unsafe_allow_html=True)
+        footer_html += '</div></div></div>'
+        
+        st.markdown(footer_html, unsafe_allow_html=True)
     
     # 문의하기 버튼
     col1, col2, col3 = st.columns([1, 1, 1])
@@ -546,11 +546,18 @@ def show_main_page():
             st.session_state.page = 'login'
             st.rerun()
     
-    # Top 버튼
+    # Top 버튼 (JavaScript로 스크롤)
     st.markdown("""
-    <a href="#" class="scroll-to-top" onclick="window.scrollTo(0,0); return false;">
-        ↑
-    </a>
+    <script>
+    function scrollToTop() {
+        const mainElement = window.parent.document.querySelector('.main');
+        if (mainElement) {
+            mainElement.scrollTop = 0;
+        }
+        window.scrollTo(0, 0);
+    }
+    </script>
+    <a href="javascript:void(0);" class="scroll-to-top" onclick="scrollToTop();">↑</a>
     """, unsafe_allow_html=True)
 
 # 상품 상세 페이지
@@ -614,11 +621,18 @@ def show_detail_page():
                 except Exception as e:
                     st.error(f"이미지 로드 실패: {e}")
     
-    # Top 버튼
+    # Top 버튼 (JavaScript로 스크롤)
     st.markdown("""
-    <a href="#" class="scroll-to-top" onclick="window.scrollTo(0,0); return false;">
-        ↑
-    </a>
+    <script>
+    function scrollToTopDetail() {
+        const mainElement = window.parent.document.querySelector('.main');
+        if (mainElement) {
+            mainElement.scrollTop = 0;
+        }
+        window.scrollTo(0, 0);
+    }
+    </script>
+    <a href="javascript:void(0);" class="scroll-to-top" onclick="scrollToTopDetail();">↑</a>
     """, unsafe_allow_html=True)
 
 # 문의하기 페이지
@@ -673,11 +687,18 @@ def show_inquiry_page():
                 st.session_state.page = 'home'
                 st.rerun()
     
-    # Top 버튼
+    # Top 버튼 (JavaScript로 스크롤)
     st.markdown("""
-    <a href="#" class="scroll-to-top" onclick="window.scrollTo(0,0); return false;">
-        ↑
-    </a>
+    <script>
+    function scrollToTopInquiry() {
+        const mainElement = window.parent.document.querySelector('.main');
+        if (mainElement) {
+            mainElement.scrollTop = 0;
+        }
+        window.scrollTo(0, 0);
+    }
+    </script>
+    <a href="javascript:void(0);" class="scroll-to-top" onclick="scrollToTopInquiry();">↑</a>
     """, unsafe_allow_html=True)
 
 # 로그인 페이지
