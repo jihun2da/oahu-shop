@@ -209,6 +209,33 @@ st.markdown("""
         background-color: #333333;
     }
     
+    /* Top 버튼 스타일 */
+    .scroll-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 999;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 24px;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .scroll-to-top:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+    
     /* 로그인 폼 스타일 */
     .login-container {
         max-width: 400px;
@@ -220,6 +247,13 @@ st.markdown("""
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 </style>
+""", unsafe_allow_html=True)
+
+# Top 버튼 HTML
+st.markdown("""
+<button class="scroll-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+    ↑
+</button>
 """, unsafe_allow_html=True)
 
 # 세션 스테이트 초기화
@@ -249,8 +283,10 @@ def load_settings():
             "ceo_name": "대표자명",
             "business_number": "123-45-67890",
             "address": "서울특별시 강남구",
-            "email": "contact@oahu-shop.com",
             "phone": "02-1234-5678",
+            "kakao_id": "",
+            "instagram_id": "",
+            "wechat_id": "",
             "enabled": True
         },
         "inquiry_form_fields": [
@@ -403,6 +439,15 @@ def show_footer(settings):
     business_info = settings.get('business_info', {})
     
     if business_info.get('enabled', False):
+        # 메신저 정보 구성
+        messenger_info = ""
+        if business_info.get('kakao_id'):
+            messenger_info += f"카카오톡: {business_info.get('kakao_id')}<br>"
+        if business_info.get('instagram_id'):
+            messenger_info += f"인스타그램: {business_info.get('instagram_id')}<br>"
+        if business_info.get('wechat_id'):
+            messenger_info += f"위챗: {business_info.get('wechat_id')}<br>"
+        
         st.markdown(f"""
         <div class="footer">
             <div class="footer-section">
@@ -412,8 +457,8 @@ def show_footer(settings):
                     대표자: {business_info.get('ceo_name', '')}<br>
                     사업자등록번호: {business_info.get('business_number', '')}<br>
                     주소: {business_info.get('address', '')}<br>
-                    이메일: {business_info.get('email', '')}<br>
-                    전화: {business_info.get('phone', '')}
+                    전화: {business_info.get('phone', '')}<br>
+                    {messenger_info}
                 </div>
             </div>
         </div>
@@ -863,19 +908,30 @@ def show_admin_page():
                 "사업자등록번호",
                 value=business_info.get('business_number', '')
             )
-        
-        with col_b:
             address = st.text_input(
                 "주소",
                 value=business_info.get('address', '')
             )
-            email = st.text_input(
-                "이메일",
-                value=business_info.get('email', '')
-            )
+        
+        with col_b:
             phone = st.text_input(
                 "전화번호",
                 value=business_info.get('phone', '')
+            )
+            kakao_id = st.text_input(
+                "카카오톡 ID",
+                value=business_info.get('kakao_id', ''),
+                placeholder="예: @oahu_shop"
+            )
+            instagram_id = st.text_input(
+                "인스타그램 ID",
+                value=business_info.get('instagram_id', ''),
+                placeholder="예: @oahu.official"
+            )
+            wechat_id = st.text_input(
+                "위챗 ID",
+                value=business_info.get('wechat_id', ''),
+                placeholder="예: oahu_wechat"
             )
         
         if st.button("사업자 정보 저장", use_container_width=True):
@@ -884,8 +940,10 @@ def show_admin_page():
                 'ceo_name': ceo_name,
                 'business_number': business_number,
                 'address': address,
-                'email': email,
                 'phone': phone,
+                'kakao_id': kakao_id,
+                'instagram_id': instagram_id,
+                'wechat_id': wechat_id,
                 'enabled': business_enabled
             }
             save_settings(settings)

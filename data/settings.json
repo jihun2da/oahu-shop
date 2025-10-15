@@ -11,8 +11,10 @@
     "ceo_name": "대표자명",
     "business_number": "123-45-67890",
     "address": "서울특별시 강남구",
-    "email": "contact@oahu-shop.com",
     "phone": "02-1234-5678",
+    "kakao_id": "",
+    "instagram_id": "",
+    "wechat_id": "",
     "enabled": true
   },
   "inquiry_form_fields": [
