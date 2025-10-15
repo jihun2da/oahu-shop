@@ -854,6 +854,148 @@ def show_admin_page():
     with tab3:
         st.subheader("상품 정보 관리")
         
+        # 상품 업로드 섹션
+        st.markdown("### 🆕 새 상품 등록")
+        
+        with st.form("upload_product_form"):
+            # 상품 정보 입력
+            product_name = st.text_input("상품명", placeholder="예: 반팔 티셔츠")
+            product_info = st.text_input("색상/사이즈", placeholder="예: 블랙/FREE")
+            product_price = st.text_input("가격", placeholder="예: 29,000원")
+            
+            # 이미지 업로드
+            uploaded_files = st.file_uploader(
+                "상품 이미지 업로드 (여러 장 선택 가능)",
+                type=['jpg', 'jpeg', 'png'],
+                accept_multiple_files=True,
+                help="첫 번째 이미지는 대표 이미지로, 두 번째 이미지는 썸네일로 사용됩니다."
+            )
+            
+            # 폴더 번호 자동 생성 미리보기
+            folders = get_product_folders()
+            if folders:
+                folder_numbers = [int(f.name) for f in folders]
+                next_folder_num = max(folder_numbers) + 1
+            else:
+                next_folder_num = 126
+            
+            st.info(f"📁 새 상품은 폴더 번호 **{next_folder_num}**에 저장됩니다.")
+            
+            submit_button = st.form_submit_button("✅ 상품 등록", use_container_width=True)
+            
+            if submit_button:
+                if not product_name or not product_info or not product_price:
+                    st.error("❌ 모든 상품 정보를 입력해주세요.")
+                elif not uploaded_files:
+                    st.error("❌ 최소 1개 이상의 이미지를 업로드해주세요.")
+                else:
+                    try:
+                        # 새 폴더 생성
+                        new_folder = IMAGE_DIR / str(next_folder_num)
+                        new_folder.mkdir(parents=True, exist_ok=True)
+                        
+                        # 이미지 저장
+                        for idx, uploaded_file in enumerate(uploaded_files, 1):
+                            img = Image.open(uploaded_file)
+                            img_path = new_folder / f"image_{idx}.jpg"
+                            img.save(img_path, "JPEG")
+                        
+                        st.success(f"""
+                        ✅ 상품이 성공적으로 등록되었습니다!
+                        
+                        - **폴더**: {next_folder_num}
+                        - **상품명**: {product_name}
+                        - **업로드된 이미지**: {len(uploaded_files)}장
+                        
+                        이제 [구글 시트](https://docs.google.com/spreadsheets/d/1Cnd19QAMyNEgvEdfXTA1QtW0VMiTRMCBFGmrzKWezNQ/edit?usp=sharing)에 상품 정보를 추가해주세요:
+                        - **A열**: {product_name}
+                        - **B열**: {product_info}
+                        - **C열**: {product_price}
+                        """)
+                        
+                        st.info("💡 구글 시트 업데이트 후 '🔄 상품 정보 새로고침' 버튼을 클릭하세요.")
+                        
+                    except Exception as e:
+                        st.error(f"❌ 상품 등록 중 오류가 발생했습니다: {e}")
+        
+        st.markdown("---")
+        
+        # 기존 상품 이미지 수정 섹션
+        st.markdown("### 📸 기존 상품 이미지 관리")
+        
+        folders = get_product_folders()
+        if folders:
+            folder_names = [f.name for f in folders]
+            selected_folder = st.selectbox(
+                "수정할 상품 폴더 선택",
+                options=folder_names,
+                help="이미지를 추가하거나 수정할 상품 폴더를 선택하세요."
+            )
+            
+            if selected_folder:
+                folder_path = IMAGE_DIR / selected_folder
+                existing_images = get_folder_images(folder_path)
+                
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.markdown(f"**현재 이미지: {len(existing_images)}장**")
+                    if existing_images:
+                        # 썸네일로 현재 이미지 표시
+                        for i, img_path in enumerate(existing_images[:4], 1):
+                            try:
+                                img = Image.open(img_path)
+                                st.image(img, caption=f"image_{i}.jpg", width=100)
+                            except:
+                                pass
+                        if len(existing_images) > 4:
+                            st.info(f"외 {len(existing_images) - 4}장 더 있음")
+                
+                with col2:
+                    with st.form(f"update_product_images_{selected_folder}"):
+                        st.markdown("**새 이미지 업로드**")
+                        new_images = st.file_uploader(
+                            "추가할 이미지 선택",
+                            type=['jpg', 'jpeg', 'png'],
+                            accept_multiple_files=True,
+                            key=f"uploader_{selected_folder}"
+                        )
+                        
+                        replace_mode = st.checkbox("기존 이미지 모두 삭제하고 교체")
+                        
+                        update_button = st.form_submit_button("🔄 이미지 업데이트", use_container_width=True)
+                        
+                        if update_button and new_images:
+                            try:
+                                if replace_mode:
+                                    # 기존 이미지 삭제
+                                    for img in existing_images:
+                                        img.unlink()
+                                    start_idx = 1
+                                    st.info("기존 이미지를 모두 삭제했습니다.")
+                                else:
+                                    # 기존 이미지 유지, 새 번호부터 시작
+                                    start_idx = len(existing_images) + 1
+                                
+                                # 새 이미지 저장
+                                for idx, uploaded_file in enumerate(new_images, start_idx):
+                                    img = Image.open(uploaded_file)
+                                    img_path = folder_path / f"image_{idx}.jpg"
+                                    img.save(img_path, "JPEG")
+                                
+                                st.success(f"✅ {len(new_images)}장의 이미지가 업데이트되었습니다!")
+                                st.rerun()
+                                
+                            except Exception as e:
+                                st.error(f"❌ 이미지 업데이트 중 오류: {e}")
+        else:
+            st.warning("등록된 상품이 없습니다.")
+        
+        st.markdown("---")
+        
+        # 기존 상품 관리 섹션
+        st.markdown("### 📋 등록된 상품 관리")
+        
         st.markdown("""
         상품 정보는 구글 시트에서 관리됩니다.
         
