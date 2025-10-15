@@ -249,11 +249,35 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Top 버튼 HTML
+# Top 버튼 HTML (JavaScript 포함)
 st.markdown("""
-<button class="scroll-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+<div id="scroll-to-top" class="scroll-to-top" onclick="scrollToTop()">
     ↑
-</button>
+</div>
+
+<script>
+function scrollToTop() {
+    window.parent.document.querySelector('.main').scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+// Streamlit iframe 내에서도 작동하도록
+if (window.parent !== window) {
+    document.getElementById('scroll-to-top').addEventListener('click', function() {
+        window.parent.postMessage({
+            type: 'streamlit:setComponentValue',
+            value: 'scroll-top'
+        }, '*');
+        
+        // 직접 스크롤도 시도
+        window.scrollTo({top: 0, behavior: 'smooth'});
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+    });
+}
+</script>
 """, unsafe_allow_html=True)
 
 # 세션 스테이트 초기화
@@ -439,16 +463,8 @@ def show_footer(settings):
     business_info = settings.get('business_info', {})
     
     if business_info.get('enabled', False):
-        # 메신저 정보 구성
-        messenger_info = ""
-        if business_info.get('kakao_id'):
-            messenger_info += f"카카오톡: {business_info.get('kakao_id')}<br>"
-        if business_info.get('instagram_id'):
-            messenger_info += f"인스타그램: {business_info.get('instagram_id')}<br>"
-        if business_info.get('wechat_id'):
-            messenger_info += f"위챗: {business_info.get('wechat_id')}<br>"
-        
-        st.markdown(f"""
+        # 사업자 정보 HTML 생성
+        info_html = f"""
         <div class="footer">
             <div class="footer-section">
                 <div class="footer-title">🏢 사업자 정보</div>
@@ -457,12 +473,24 @@ def show_footer(settings):
                     대표자: {business_info.get('ceo_name', '')}<br>
                     사업자등록번호: {business_info.get('business_number', '')}<br>
                     주소: {business_info.get('address', '')}<br>
-                    전화: {business_info.get('phone', '')}<br>
-                    {messenger_info}
+                    전화: {business_info.get('phone', '')}
+        """
+        
+        # 메신저 정보 추가 (있는 경우만)
+        if business_info.get('kakao_id'):
+            info_html += f"<br>카카오톡: {business_info.get('kakao_id')}"
+        if business_info.get('instagram_id'):
+            info_html += f"<br>인스타그램: {business_info.get('instagram_id')}"
+        if business_info.get('wechat_id'):
+            info_html += f"<br>위챗: {business_info.get('wechat_id')}"
+        
+        info_html += """
                 </div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """
+        
+        st.markdown(info_html, unsafe_allow_html=True)
     
     # 문의하기 버튼
     col1, col2, col3 = st.columns([1, 1, 1])
