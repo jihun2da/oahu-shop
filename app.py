@@ -23,6 +23,9 @@ st.set_page_config(
 DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
 
+# 이미지 디렉토리
+IMAGE_DIR = Path("image")
+
 # 관리자 계정 정보
 ADMIN_USERNAME = "oahu"
 ADMIN_PASSWORD = "oahu123"
