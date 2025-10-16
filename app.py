@@ -13,7 +13,7 @@ import io
 
 # 페이지 설정
 st.set_page_config(
-    page_title="OAHU Shop",
+    page_title="OUR Shop",
     page_icon="🛍️",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -27,8 +27,8 @@ DATA_DIR.mkdir(exist_ok=True)
 IMAGE_DIR = Path("image")
 
 # 관리자 계정 정보
-ADMIN_USERNAME = "oahu"
-ADMIN_PASSWORD = "oahu123"
+ADMIN_USERNAME = "our"
+ADMIN_PASSWORD = "our123"
 
 # CSS 스타일링
 st.markdown("""
@@ -244,7 +244,7 @@ def load_settings():
     return {
         "banner_slide_interval": 3,
         "banners": [],
-        "shop_name": "🌺 OAHU SHOP 🌺",
+        "shop_name": "🌺 OUR SHOP 🌺",
         "shop_name_font_size": 48,
         "shop_name_color": "#333333",
         "notice": {
@@ -253,7 +253,7 @@ def load_settings():
             "enabled": True
         },
         "business_info": {
-            "company_name": "OAHU Shop",
+            "company_name": "OUR Shop",
             "ceo_name": "대표자명",
             "business_number": "123-45-67890",
             "address": "서울특별시 강남구",
@@ -300,7 +300,8 @@ def save_inquiry(inquiry_data):
 def load_google_sheet_data():
     try:
         sheet_id = "1Cnd19QAMyNEgvEdfXTA1QtW0VMiTRMCBFGmrzKWezNQ"
-        url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
+        gid = 531747363  # OUR 시트 탭 (아워 상품 정보)
+        url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
         df = pd.read_csv(url)
         return df
     except Exception as e:
@@ -414,7 +415,7 @@ def show_footer(settings):
     
     if business_info.get('enabled', False):
         # 사업자 정보 구성
-        company_name = business_info.get('company_name', 'OAHU Shop')
+        company_name = business_info.get('company_name', 'OUR Shop')
         ceo_name = business_info.get('ceo_name', '')
         business_number = business_info.get('business_number', '')
         address = business_info.get('address', '')
@@ -454,7 +455,7 @@ def show_main_page():
     settings = load_settings()
     
     # 헤더 (상점명)
-    shop_name = settings.get('shop_name', '🌺 OAHU SHOP 🌺')
+    shop_name = settings.get('shop_name', '🌺 OUR SHOP 🌺')
     shop_name_font_size = settings.get('shop_name_font_size', 48)
     shop_name_color = settings.get('shop_name_color', '#333333')
     
@@ -568,8 +569,8 @@ def show_detail_page():
         product_price = "가격 문의"
     
     st.markdown(f"# {product_name}")
-    st.markdown(f"**색상/사이즈:** {product_info}")
-    st.markdown(f"**가격:** {product_price}")
+    st.markdown(f'<div style="font-size: 16px; margin: 10px 0;"><strong>색상/사이즈:</strong> {product_info}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size: 16px; margin: 10px 0;"><strong>가격:</strong> {product_price}</div>', unsafe_allow_html=True)
     st.markdown("---")
     
     # 이미지 갤러리
@@ -696,13 +697,17 @@ def show_login_page():
         
         with col_a:
             if st.button("로그인", use_container_width=True):
-                if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+                # 입력값 공백 제거
+                username_clean = username.strip() if username else ""
+                password_clean = password.strip() if password else ""
+                
+                if username_clean == ADMIN_USERNAME and password_clean == ADMIN_PASSWORD:
                     st.session_state.logged_in = True
                     st.session_state.page = 'admin'
                     st.success("로그인 성공!")
                     st.rerun()
                 else:
-                    st.error("아이디 또는 비밀번호가 올바르지 않습니다.")
+                    st.error(f"아이디 또는 비밀번호가 올바르지 않습니다. (ID: our / PW: our123)")
         
         with col_b:
             if st.button("취소", use_container_width=True):
@@ -760,7 +765,7 @@ def show_admin_page():
         with col1:
             shop_name = st.text_input(
                 "상점명",
-                value=settings.get('shop_name', '🌺 OAHU SHOP 🌺'),
+                value=settings.get('shop_name', '🌺 OUR SHOP 🌺'),
                 help="메인 페이지 상단에 표시될 상점명을 입력하세요"
             )
             
@@ -1117,7 +1122,7 @@ def show_admin_page():
         with col_a:
             company_name = st.text_input(
                 "상호",
-                value=business_info.get('company_name', 'OAHU Shop')
+                value=business_info.get('company_name', 'OUR Shop')
             )
             ceo_name = st.text_input(
                 "대표자",
